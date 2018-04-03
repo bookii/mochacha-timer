@@ -44,7 +44,8 @@ async def on_ready():
                 print(member_after.voice.voice_channel.id)
                 member_log.set_join_time()
             elif member_before.voice.voice_channel:
-                diff_secs = time.time() - member_log.get_join_time()
-                print(secs_to_hours(diff_secs))
+                if member_log.get_join_time:    # 起動時に既にjoinしていた場合は除外
+                    diff_secs = time.time() - member_log.get_join_time()
+                    print(secs_to_hours(diff_secs))
 
 client.run(TOKEN)
