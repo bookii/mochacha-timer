@@ -6,8 +6,9 @@ import discord
 # read config
 config = configparser.ConfigParser()
 config.read('./config.ini')
-SERVER_ID = config.get('DISCORD', 'server_id')
-TOKEN = config.get('DISCORD', 'token')
+TOKEN = config.get('DISCORD', 'TOKEN')
+SERVER_ID = config.get('DISCORD', 'SERVER_ID')
+CHANNEL_ID = config.get('DISCORD', 'CHANNEL_ID')
 
 class MemberLog:
     def __init__(self, member):
@@ -20,10 +21,10 @@ class MemberLog:
     def get_join_time(self):
         return self.join_time
 
-def secs_to_hours(secs):
-    hours = secs // 3600
-    minutes = secs // 60
-    return '%d:%02d:%02d' % (hours, minutes, int(secs))
+def second_to_hour(second):
+    hour = second // 3600
+    minute = second // 60
+    return '%d:%02d:%02d' % (hour, minute, int(second))
 
 client = discord.Client()
 
@@ -40,12 +41,11 @@ async def on_ready():
 
         @client.event
         async def on_voice_state_update(member_before, member_after):
-            if member_after.voice.voice_channel:
-                print(member_after.voice.voice_channel.id)
+            if member_after.voice.voice_channel and member_after.voice.voice_channel.id == CHANNEL_ID:
                 member_log.set_join_time()
-            elif member_before.voice.voice_channel:
-                if member_log.get_join_time:    # 起動時に既にjoinしていた場合は除外
-                    diff_secs = time.time() - member_log.get_join_time()
-                    print(secs_to_hours(diff_secs))
+            elif member_before.voice.voice_channel and member_before.voice.voice_channel.id:
+                if member_log.get_join_time():    # 起動時に既にjoinしていた場合は除外
+                    diff_second = time.time() - member_log.get_join_time()
+                    print(second_to_hour(diff_second))
 
 client.run(TOKEN)
