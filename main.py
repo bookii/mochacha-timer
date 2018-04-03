@@ -24,8 +24,6 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
-
-
 @client.event
 async def on_voice_state_update(before, after):
 # on mutedでもこの関数は呼ばれるので, 動作をbefore, afterいずれかがNoneのときに限定
@@ -37,5 +35,6 @@ async def on_voice_state_update(before, after):
             diff_str = second_to_hour(diff_float)
             message = '{} has connected to voice channels for {}.'.format(after.name, diff_str)
             await client.send_message(client.get_channel(TEXT_CHANNEL_ID), message)
+            join_time.pop(after.name)   # join_timeの削除
 
 client.run(TOKEN)
