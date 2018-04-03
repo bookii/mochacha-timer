@@ -9,14 +9,6 @@ config.read('./config.ini')
 TOKEN = config.get('DISCORD', 'TOKEN')
 TEXT_CHANNEL_ID = config.get('DISCORD', 'TEXT_CHANNEL_ID')
 
-class MemberLog:
-    def __init__(self, member):
-        self.member = member
-        self.join_time = None
-
-    def set_join_time(self):
-        self.join_time = time.time()
-
 def second_to_hour(second):
     hour = second // 3600
     minute = second // 60
@@ -30,10 +22,6 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
-
-    # for member in client.get_server(SERVER_ID).members:
-    #     member_log = MemberLog(member)
-    #     member_before = member_after = member
 
     join_time = {}
 
