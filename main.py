@@ -7,8 +7,7 @@ import discord
 config = configparser.ConfigParser()
 config.read('./config.ini')
 TOKEN = config.get('DISCORD', 'TOKEN')
-SERVER_ID = config.get('DISCORD', 'SERVER_ID')
-CHANNEL_ID = config.get('DISCORD', 'CHANNEL_ID')
+TEXT_CHANNEL_ID = config.get('DISCORD', 'TEXT_CHANNEL_ID')
 
 class MemberLog:
     def __init__(self, member):
@@ -32,24 +31,24 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
-    # member_log = []
+    # for member in client.get_server(SERVER_ID).members:
+    #     member_log = MemberLog(member)
+    #     member_before = member_after = member
 
-    for member in client.get_server(SERVER_ID).members:
-        member_log = MemberLog(member)
-        member_before = member_after = member
+    join_time = {}
 
-        @client.event
-        async def on_voice_state_update(member_before, member_after):
-        # on mutedでもこの関数は呼ばれるので, 動作をbefore, afterいずれかがNoneのときに限定
-            if not member_before.voice.voice_channel and member_after.voice.voice_channel:
-                member_log.set_join_time()
-            elif member_before.voice.voice_channel and not member_after.voice.voice_channel:
-                if member_log.join_time:    # 起動時に既にjoinしていた場合は除外
-                    diff_float = time.time() - member_log.join_time
-                    diff_str = second_to_hour(diff_float)
-                    message = '{} has connected to voice channel for {}.'.format(
-                        member_log.member.name, diff_str
-                    )
-                    print(message)
+    @client.event
+    async def on_voice_state_update(before, after):
+    # on mutedでもこの関数は呼ばれるので, 動作をbefore, afterいずれかがNoneのときに限定
+        if not before.voice.voice_channel and after.voice.voice_channel:    # join
+            join_time[after.name] = time.time()
+        elif before.voice.voice_channel and not after.voice.voice_channel:  # leave
+            if join_time.get(after.name):    # 起動時に既にjoinしていた場合は除外
+                diff_float = time.time() - join_time.get(after.name)
+                diff_str = second_to_hour(diff_float)
+                message = '{} has connected to voice channel for {}.'.format(
+                    after.name, diff_str
+                )
+                await client.send_message(client.get_channel(TEXT_CHANNEL_ID), message)
 
 client.run(TOKEN)
