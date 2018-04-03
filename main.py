@@ -15,6 +15,7 @@ def second_to_hour(second):
     return '%d:%02d:%02d' % (hour, minute, int(second))
 
 client = discord.Client()
+join_time = {}
 
 @client.event
 async def on_ready():
@@ -23,18 +24,18 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
-    join_time = {}
 
-    @client.event
-    async def on_voice_state_update(before, after):
-    # on mutedでもこの関数は呼ばれるので, 動作をbefore, afterいずれかがNoneのときに限定
-        if not before.voice.voice_channel and after.voice.voice_channel:    # join
-            join_time[after.name] = time.time()
-        elif before.voice.voice_channel and not after.voice.voice_channel:  # leave
-            if join_time.get(after.name):    # 起動時に既にjoinしていた場合は除外
-                diff_float = time.time() - join_time.get(after.name)
-                diff_str = second_to_hour(diff_float)
-                message = '{} has connected to voice channels for {}.'.format(after.name, diff_str)
-                await client.send_message(client.get_channel(TEXT_CHANNEL_ID), message)
+
+@client.event
+async def on_voice_state_update(before, after):
+# on mutedでもこの関数は呼ばれるので, 動作をbefore, afterいずれかがNoneのときに限定
+    if not before.voice.voice_channel and after.voice.voice_channel:    # join
+        join_time[after.name] = time.time()
+    elif before.voice.voice_channel and not after.voice.voice_channel:  # leave
+        if join_time.get(after.name):    # 起動時に既にjoinしていた場合は除外
+            diff_float = time.time() - join_time.get(after.name)
+            diff_str = second_to_hour(diff_float)
+            message = '{} has connected to voice channels for {}.'.format(after.name, diff_str)
+            await client.send_message(client.get_channel(TEXT_CHANNEL_ID), message)
 
 client.run(TOKEN)
