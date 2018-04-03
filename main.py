@@ -46,9 +46,7 @@ async def on_ready():
             if join_time.get(after.name):    # 起動時に既にjoinしていた場合は除外
                 diff_float = time.time() - join_time.get(after.name)
                 diff_str = second_to_hour(diff_float)
-                message = '{} has connected to voice channels for {}.'.format(
-                    after.name, diff_str
-                )
+                message = '{} has connected to voice channels for {}.'.format(after.name, diff_str)
                 await client.send_message(client.get_channel(TEXT_CHANNEL_ID), message)
 
 client.run(TOKEN)
