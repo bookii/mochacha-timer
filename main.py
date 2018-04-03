@@ -47,8 +47,8 @@ async def on_ready():
                 if member_log.join_time:    # 起動時に既にjoinしていた場合は除外
                     diff_float = time.time() - member_log.join_time
                     diff_str = second_to_hour(diff_float)
-                    message = '{} has connected to {} for {}.'.format(
-                        member_log.member.name, client.get_channel(CHANNEL_ID).name, diff_str
+                    message = '{} has connected to voice channel for {}.'.format(
+                        member_log.member.name, diff_str
                     )
                     print(message)
 
