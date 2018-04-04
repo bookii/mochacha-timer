@@ -13,7 +13,7 @@ def second_to_hour(second_float):
     hour = second_float // 3600
     minute = second_float // 60
     second_int = int(second_float) % 60
-    return '%d:%02d:%02d' % (hour, minute, second_int)
+    return '{:d}{:02d}{:02d}'.format(hour, minute, second_int)
 
 client = discord.Client()
 join_time = {}
